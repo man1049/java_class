@@ -2,7 +2,7 @@ package naver.man10_49.Practice;
 
 import java.util.Arrays;
 
-public class practice_2 {
+public class Practice_2 {
 
 	public static void main(String[] args) {
 
