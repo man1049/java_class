@@ -1,0 +1,15 @@
+Arrays.copyOfRange() - 특정 범위 배열 복사
+
+ex )
+
+
+int[] array = {1,2,3,4,5,6};
+
+//복사
+int[] array_2 = Arrays.copyOfRange(복사할배열이름,n번째부터,b번째까지);
+
+array배열의 2번째부터 5번째까지 복사
+int[] array_2 = Arrays.copyOfRange(array,2,5);
+
+
+ 
