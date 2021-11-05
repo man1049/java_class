@@ -96,9 +96,6 @@ public class Practice_4 {
 				//str.length()가 0부터 시작하기떄문에 정수를 담아줄 temp_str 변수를 생성
 				int temp_str2 = 0;
 				
-				//str에 넣어진 데이터를 출력
-				System.out.print(str2 + "\n");
-
 				//str.length()의 시작인 0부터 시작하여 i를 ++ 하여 str.length()까지 반복
 				for(int i = 0 ; i < str2.length() ; i = i + 1) {
 					
@@ -114,14 +111,16 @@ public class Practice_4 {
 					//i+3위치에 있는 글자가 G 일 때
 					if(str2.charAt(i) == 'G' && str2.charAt(i+1) == 'C' && str2.charAt(i+2) == 'C' && str2.charAt(i+3) == 'G') {
 						
-						//출력된 str 아래에 GCCG를 표시하기 위한 텍스트
-						System.out.print(i);
-						System.out.print(" ");
+						//GCCG의 각 위치값을 출력
+						//str2.length()는 0부터 시작하므로
+						//i+1를 하여 자리위치를 출력함
 						System.out.print(i+1);
 						System.out.print(" ");
 						System.out.print(i+2);
 						System.out.print(" ");
 						System.out.print(i+3);
+						System.out.print(" ");
+						System.out.print(i+4);
 						System.out.print("\n");
 						
 						//i 부터 i+3까지는 GCCG
