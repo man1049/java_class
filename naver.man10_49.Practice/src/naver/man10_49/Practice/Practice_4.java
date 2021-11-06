@@ -93,13 +93,13 @@ public class Practice_4 {
 		//문자열을 넣을 변수를 생성
 				String str2 = new String();
 				str2 = "GGCDGCCGDDGCCGCCGDDCKGCCGKK";
-				//str.length()가 0부터 시작하기떄문에 정수를 담아줄 temp_str 변수를 생성
+				//str.length()가 0부터 시작하기떄문에 정수를 담아줄 temp_str2 변수를 생성
 				int temp_str2 = 0;
 				
-				//str.length()의 시작인 0부터 시작하여 i를 ++ 하여 str.length()까지 반복
+				//str.length()의 시작인 0부터 시작하여 i를 ++ 하여 str2.length()까지 반복
 				for(int i = 0 ; i < str2.length() ; i = i + 1) {
 					
-					//4개씩 체크하기때문에 i+4가 str.length()를 넘어가게되면 Exception이 발생하여 예외처리를 함
+					//4개씩 체크하기때문에 i+4가 str2.length()를 넘어가게되면 Exception이 발생하여 예외처리를 함
 					if ( (i+4) > (str2.length())) {
 						break;
 					}
