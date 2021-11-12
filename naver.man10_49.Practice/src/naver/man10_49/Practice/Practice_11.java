@@ -10,13 +10,12 @@ public class Practice_11 {
 		
 		int n = 5;
 		int[] lost = {2,3,4}; // 1,5
-		int[] reserv = {1,2,3}; // 1,2,3,4,5
-		int[] reserve;
+		int[] reserve = {1,2,3}; // 1,2,3,4,5
 		int count = 0;
 		//1,2,3,5
 		
 		Arrays.sort(lost);
-		Arrays.sort(reserv);
+		Arrays.sort(reserve);
 		
 		
 		Map<String,Integer> n_map = new TreeMap<>();
