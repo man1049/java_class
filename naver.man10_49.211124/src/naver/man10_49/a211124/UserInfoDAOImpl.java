@@ -1,13 +1,26 @@
 package naver.man10_49.a211124;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -29,6 +42,15 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 	private static String url;
 	private static String id;
 	private static String pw;
+	
+	private static BufferedReader br = null;
+	private static PrintWriter pwr = null;
+	private static LocalTime ltime = LocalTime.now();
+	private static LocalDate ldate = LocalDate.now();
+	private static String now_date = Integer.toString(ldate.getYear()) +Integer.toString(ldate.getMonthValue())+Integer.toString(ldate.getDayOfMonth());
+	private static String log_read_string = " ";
+	private static UserInfoLogOutput uilog = new UserInfoLogOutput();
+	
 	
 	//Connection 은 맨 처음 한 번 연결해놓고 계속 사용하는 경우가 일반적
 	private static Connection con = null;
@@ -53,8 +75,12 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 
 			con = DriverManager.getConnection(url,id,pw);
 			System.out.println("static 초기화 성공");
+			
+			//로그파일이 없을 시 생성
+			uilog.ExceptionOutputCreateFile();
+			
 		} catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
+			uilog.ExceptionOutput(e);
 		}
 	}
 
@@ -79,9 +105,8 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 			}
 			rs.close();
 			psmt.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			uilog.ExceptionOutput(e);
 		}
 
 		return list;
@@ -109,27 +134,112 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 			rs.close();
 
 		}catch(Exception e) {
-			System.out.println(e.getLocalizedMessage());
+			uilog.ExceptionOutput(e);
 		}
 		return uidto;
 	}
 
 	@Override
-	public int insertUserInfo(UserInfoDTO userinfodto) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int insertUserInfo(UserInfoDTO uidto) {
+		int res = -1;
+		try {
+			//num은 시퀀스를 이용해서 삽입하므로 시퀀스를 이용하는 내용을 설정하고
+			//나머지 3개는 매번 내용이 바뀌므로 ?로 처리
+			PreparedStatement psmt = con.prepareStatement("insert into userinfo (uinum,uidate,uiname,uiaddress,uinickname) values(usernumber.nextval,?,?,?,?)");
+
+			//?에 값을 바인딩
+			psmt.setDate(1, uidto.getUidate());;
+			psmt.setString(2, uidto.getUiname());
+			psmt.setString(3, uidto.getUiaddress());
+			psmt.setString(4, uidto.getUinickname());
+
+			//실행
+			res = psmt.executeUpdate();
+			if(res < 0) {
+				System.out.println("insert 실패");
+			}else {
+				System.out.println("insert 성공");
+			}
+
+			psmt.close();
+		}catch (Exception e) {
+			
+			uilog.ExceptionOutput(e);
+			
+			/*
+			//Exception시 로그파일만들기
+			try {
+				StringBuilder sb = new StringBuilder();
+				br = new BufferedReader(new FileReader("./"+now_date+"_log.txt"));
+				while(br.ready()) {
+					sb.append(br.readLine()+"\n");
+				}
+				
+				log_read_string = sb.toString();
+				//System.out.println(log_read_string);
+				br.close();
+			} catch (Exception e1) {
+			//System.out.println("불러오기경로오류");
+			}
+			
+			try {
+				pwr = new PrintWriter("./"+now_date+"_log.txt");
+				pwr.println(now_date+" / "+ltime.getHour()+":"+ltime.getMinute()+":"+ltime.getSecond()+":"+" / "+e+log_read_string);
+				pwr.flush();
+				pwr.close();
+			} catch (Exception e1) {
+			//System.out.println("저장경로오류"); System.out.println(e1.getLocalizedMessage());
+			}*/
+			
+		}
+		return res;
 	}
 
 	@Override
-	public int updateUserInfo(UserInfoDTO userinfodto) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int updateUserInfo(UserInfoDTO uidto) {
+		int res = -1;
+		
+		try {
+			PreparedStatement psmt = 
+			con.prepareStatement("update userinfo set UIDATE = ?, UINAME = ?,UIADDRESS = ?,UINICKNAME = ? where UINUM = ?");
+			
+			psmt.setDate(1, uidto.getUidate());
+			psmt.setString(2, uidto.getUiname());
+			psmt.setString(3, uidto.getUiaddress());
+			psmt.setString(4, uidto.getUinickname());
+			psmt.setInt(5, uidto.getUinum());
+			
+			res = psmt.executeUpdate();
+			if(res<0) {
+				System.out.println("실패");
+			}else {
+				System.out.println("성공");
+			}
+		} catch (SQLException e) {
+			uilog.ExceptionOutput(e);
+		}
+		
+		return res;
 	}
 
 	@Override
 	public int deleteUserInfo(int uinum) {
-		// TODO Auto-generated method stub
-		return 0;
+		int res = -1;
+		try {
+			PreparedStatement psmt = con.prepareStatement("delete from UserInfo where uinum = ?");
+			psmt.setInt(1, uinum);
+			
+			res = psmt.executeUpdate();
+			if(res > 0) {
+				System.out.println("성공");
+			}else {
+				System.out.println("실패");
+			}
+		} catch (SQLException e) {
+			uilog.ExceptionOutput(e);
+		}
+		
+		return res;
 	}
 
 }
