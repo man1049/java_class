@@ -222,7 +222,6 @@ public class AutoSpamDAOImpl implements AutoSpamDAO {
 	@Override
 	public void autoSpamExit(String code) {
 		try {
-			dr.close();
 			try {
 				InputStream in = this.getClass().getClassLoader().getResourceAsStream("db.properties");
 				Properties p = new Properties();
@@ -251,6 +250,7 @@ public class AutoSpamDAOImpl implements AutoSpamDAO {
 			con.close();
 			pstmt.close();
 			rs.close();
+			dr.close();
 			
 		} catch (Exception e) {}		
 	}
