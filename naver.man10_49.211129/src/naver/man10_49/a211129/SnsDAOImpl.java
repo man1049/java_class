@@ -5,6 +5,17 @@ import java.sql.SQLException;
 public class SnsDAOImpl extends DAO implements SnsDAO {
 	private static SnsDAO snsDAO;
 
+	@Override
+	public void closeconnect() {
+		try {
+			con.close();
+			pstmt.close();
+			rs.close();
+		} catch (Exception e) {
+			System.out.println("close Exception : "+e.getLocalizedMessage());
+		}
+	}
+
 	public static SnsDAO sharedInstance() {
 		if(snsDAO == null) {
 			snsDAO = new SnsDAOImpl();
@@ -13,72 +24,56 @@ public class SnsDAOImpl extends DAO implements SnsDAO {
 	}
 
 	@Override
-	public String idcheck(String id) {
-		String res = null;
+	public boolean idcheck(String id) {
+		boolean res = false;
 
 		try {
 			pstmt = con.prepareStatement("Select uiid from UserInfo where uiid = ?");
-			pstmt.setString(1, id);
+			pstmt.setString(1, id.trim());
 			rs = pstmt.executeQuery();
-			if(rs.next() == true ) {
-				System.out.println("중복입니다.");
-				return null;
-			}else {
-				System.out.println("중복이 아닙니다.");
-				return id;
-			}
+			res = rs.next();
+
 		} catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
+			System.out.println("아이디 익셉션1 : "+e.getLocalizedMessage());
 		}
 		return res;
 	}
 
 	@Override
-	public String nncheck(String nn) {
-		String res = null;
+	public boolean nncheck(String nn) {
+		boolean res = false;
 
 		try {
 			pstmt = con.prepareStatement("Select uinn from UserInfo where uinn = ?");
 			pstmt.setString(1, nn);
 			rs = pstmt.executeQuery();
-			if(rs.next() == true ) {
-				System.out.println("중복입니다.");
-				return null;
-			}else {
-				System.out.println("중복이 아닙니다.");
-				return nn;
-			}
+			res = rs.next();
+
 		} catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
+			System.out.println("닉네임 익셉션1 : "+e.getLocalizedMessage());
 		}
 		return res;
 	}
 
 	@Override
-	public String emcheck(String em) {
-		String res = null;
+	public boolean emcheck(String em) {
+		boolean res = false;
 
 		try {
 			pstmt = con.prepareStatement("Select uiem from UserInfo where uiem = ?");
 			pstmt.setString(1, em);
 			rs = pstmt.executeQuery();
-			if(rs.next() == true ) {
-				System.out.println("중복입니다.");
-				return null;
-			}else {
-				System.out.println("중복이 아닙니다.");
-				return em;
-			}
+			res = rs.next();
 		} catch (Exception e) {
-			System.out.println(e.getLocalizedMessage());
+			System.out.println("이메일 익셉션1 : "+e.getLocalizedMessage());
 		}
 		return res;
 	}
 
 	@Override
 	public int join(UserInfoDTO uid) {
-		int res = 0;
-		
+		int res = -1;
+
 		try {
 			pstmt = con.prepareStatement("insert into UserInfo(uiid,uipw,uinn,uiem,uipt,uiip,uidate) values(?,?,?,?,?,?,?)");
 			pstmt.setString(1, uid.getUiid());
@@ -88,39 +83,40 @@ public class SnsDAOImpl extends DAO implements SnsDAO {
 			pstmt.setString(5, uid.getUipt());
 			pstmt.setString(6, uid.getUiip());
 			pstmt.setDate(7, uid.getUidate());
-			
-			rs = pstmt.executeQuery();
-			
+
+			res = pstmt.executeUpdate();
+
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("join Exception : "+e.getLocalizedMessage());
 		}
-		
-		return 0;
+
+		return res;
 	}
 
 	@Override
 	public boolean login(String id, String pw) {
+		boolean res = false;
 		try {
 			pstmt = con.prepareStatement("select uiid,uipw from UserInfo where uiid = ? and uipw = ?");
 			pstmt.setString(1, id);
 			pstmt.setString(2, pw);
-			
+
 			rs = pstmt.executeQuery();
-			
-			if(rs.next() == false) {
-				return false;
-			}else {
-				return true;
-			}
-		} catch (SQLException e) {}
-		return false;
+
+			res = rs.next();
+
+
+
+		} catch (Exception e) {
+			System.out.println("login Exception : "+e.getLocalizedMessage());
+		}
+		return res;
 	}
 
 	@Override
-	public UserInfoDTO getMe(String nn) {
+	public UserInfoDTO getInfo(String nn) {
 		UserInfoDTO uidto = new UserInfoDTO();
-		
+
 		try {
 			pstmt = con.prepareStatement("select uinum,uiid,uipw,uinn,uiem,uipt,uiip,uidate from UserInfo where uinn = ?");
 			pstmt.setString(1, nn);
@@ -134,15 +130,15 @@ public class SnsDAOImpl extends DAO implements SnsDAO {
 			uidto.setUipt(rs.getString("uipt"));
 			uidto.setUiip(rs.getString("uiip"));
 			uidto.setUidate(rs.getDate("uidate"));
-		
-		} catch (SQLException e) {}
-		
+		} catch (Exception e) {
+			System.out.println("getInfo Exception : "+e.getLocalizedMessage());
+		}
 		return uidto;
 	}
 
 	@Override
 	public int infomodi(UserInfoDTO uid) {
-		int res = 0;
+		int res = -1;
 		try {
 			pstmt = con.prepareStatement("update UserInfo set uipw = ?,uinn = ?,uipt = ? where uiid = ?");
 			//uipw = ?,uinn = ?,uiem = ?,uipt = ? 
@@ -150,82 +146,45 @@ public class SnsDAOImpl extends DAO implements SnsDAO {
 			pstmt.setString(2, uid.getUinn());
 			pstmt.setString(3, uid.getUipt());
 			pstmt.setString(4, uid.getUiid());
-			
-			rs = pstmt.executeQuery();
-			
-		
-		
+
+			res = pstmt.executeUpdate();
+
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("infomodi Exception : "+e.getLocalizedMessage());
 		}
-		return 0;
+		return res;
 	}
 
 	@Override
-	public int infodel(int uinum) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	public int infodel(String uiid,String uipw) {
+		int res = -1;
+		try {
+			pstmt = con.prepareStatement("select uiid,uipw from UserInfo where uiid = ? and uipw = ?");
+			pstmt.setString(1, uiid);
+			pstmt.setString(2, uipw);
 
-	@Override
-	public int write(UserWriteDTO uwd) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+			rs = pstmt.executeQuery();
 
-	@Override
-	public int writemodi(UserWriteDTO uwd) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+			if(rs.next()) {
+				pstmt = con.prepareStatement("delete from UserInfo where uiid = ?");
+				pstmt.setString(1, uiid);
 
-	@Override
-	public int writedel(int uwnum) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+				res = pstmt.executeUpdate();
 
-	@Override
-	public int photoup(String[] uppt) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+				System.out.println("삭제완료");
 
-	@Override
-	public int photodel(String[] uppt) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+			}else {
+				System.out.println("삭제실패");
+				return 0;
+			}
+		} catch(Exception e) {
 
-	@Override
-	public int photomodi(String[] uppt) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+		}
 
-	@Override
-	public int refly(UserReflyDTO urd) {
-		// TODO Auto-generated method stub
-		return 0;
+		return res;
 	}
+	
 
-	@Override
-	public int reflydel(int uwnum) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int reflymodi(UserReflyDTO urd) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int writelist(int page) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
 
 }
