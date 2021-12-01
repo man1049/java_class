@@ -221,6 +221,7 @@ public class AutoSpamDAOImpl implements AutoSpamDAO {
 
 	@Override
 	public void autoSpamExit(String code) {
+		dr.manage().timeouts().pageLoadTimeout(1, TimeUnit.SECONDS);
 		try {
 			try {
 				InputStream in = this.getClass().getClassLoader().getResourceAsStream("db.properties");
