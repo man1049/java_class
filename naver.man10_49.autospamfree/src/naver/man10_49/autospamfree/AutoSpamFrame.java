@@ -2,20 +2,24 @@ package naver.man10_49.autospamfree;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.*;
 import javax.swing.text.BoxView;
 
 @SuppressWarnings("serial")
-public class AutoSpamFrame extends JFrame {
-
+public class AutoSpamFrame extends JFrame implements WindowListener{
+	AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
+	String code = null;
 	boolean bl = false;
 
-	AutoSpamFrame(String id, String pw, String code) {
-
+	AutoSpamFrame(String code) {
+		this.code = code;
+		
 		JOptionPane.showMessageDialog(null, "상업적 용도로 사용이 불가능합니다.", "문의 : man10_49@naver.com", JOptionPane.WARNING_MESSAGE);
 		JOptionPane.showMessageDialog(null, "인터넷창을 닫으시면 진행이 불가능합니다.", "문의 : man10_49@naver.com", JOptionPane.WARNING_MESSAGE);
-		AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
+		
 		BoxView bv = new BoxView(null, getDefaultCloseOperation());
 		bv.append(bv);
 		JPanel jp1 = new JPanel();
@@ -58,11 +62,12 @@ public class AutoSpamFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
-				bl = asdao.todayFree(id, pw);
+				bl = asdao.todayFree();
 				if(bl == false) {
 					JOptionPane.showMessageDialog(null, "재시도해주세요", "error-1", JOptionPane.ERROR_MESSAGE, null);
 				}else {
 					JOptionPane.showMessageDialog(null, "작성이 완료되었습니다.","알림", JOptionPane.INFORMATION_MESSAGE);
+					
 				}
 			}
 		});
@@ -71,7 +76,7 @@ public class AutoSpamFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
-				bl = asdao.todayNc(id, pw);
+				bl = asdao.todayNc();
 				if(bl == false) {
 					JOptionPane.showMessageDialog(null, "재시도해주세요","error-1", JOptionPane.ERROR_MESSAGE);
 				}else {
@@ -84,7 +89,7 @@ public class AutoSpamFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
-				bl = asdao.Uami(id, pw);
+				bl = asdao.Uami();
 				if(bl == false) {
 					JOptionPane.showMessageDialog(null, "재시도해주세요","error-1", JOptionPane.ERROR_MESSAGE);
 				}else {
@@ -97,7 +102,7 @@ public class AutoSpamFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
-				bl = asdao.todayServer(id, pw);
+				bl = asdao.todayServer();
 				if(bl == false) {
 					JOptionPane.showMessageDialog(null, "재시도해주세요","error-1", JOptionPane.ERROR_MESSAGE);
 				}else {
@@ -110,7 +115,7 @@ public class AutoSpamFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//AutoSpamDAO asdao = AutoSpamDAOImpl.sharedInstance();
-				bl = asdao.linPlay(id, pw);
+				bl = asdao.linPlay();
 				if(bl == false) {
 					JOptionPane.showMessageDialog(null, "재시도해주세요","error-1", JOptionPane.ERROR_MESSAGE);
 				}else {
@@ -131,6 +136,7 @@ public class AutoSpamFrame extends JFrame {
 			}
 		});
 
+		addWindowListener(this);
 		setTitle("문의 : man10_49@naver.com");
 		setVisible(true);	//창을 눈에 보이도록 함
 		setSize(560, 100);	//사이즈는 560*100
@@ -138,5 +144,52 @@ public class AutoSpamFrame extends JFrame {
 		setLocationRelativeTo(null);	//창이 가운데에 뜨도록 함
 		setDefaultCloseOperation(EXIT_ON_CLOSE);	//창을 끄면 프로그램을 종료
 	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		try {
+			asdao.autoSpamExit(code);
+		}catch(Exception ee) {}
+		finally {
+			System.exit(0);
+		}
+	}
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

@@ -13,12 +13,13 @@ public class AutoSpamCheck {
 			if(bool == -1) {
 				JOptionPane.showMessageDialog(null, "등록되지 않은 코드입니다.","정보없음", JOptionPane.ERROR_MESSAGE);
 			}else if(bool == 0) {
-				new AutoSpamLoginFrame(code);
+				new AutoSpamFrame(code);
 			}else if(bool == 1) {
 				JOptionPane.showMessageDialog(null, "공유된 코드로 판단하여 차단되었습니다.","사용불가", JOptionPane.ERROR_MESSAGE);
 			}else if(bool == 2) {
 				JOptionPane.showMessageDialog(null, "차단된 코드입니다.","사용불가", JOptionPane.ERROR_MESSAGE);
 			}
+			
 		}catch (Exception e) {
 			//System.out.println(e.getLocalizedMessage());
 		}
